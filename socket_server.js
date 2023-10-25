@@ -18,19 +18,25 @@ const port = 4000;
 
 app.use(cors());
 app.use(express.static('node_modules'));
-var clientId = null;
+var cmsDataInfo = null;
 // Xử lý tải lên
 io.on('connection', (socket) => {
 
   
-  socket.on('primary-clientId-from-file-server', (id) => {
-    console.log('clientId nhan duoc: ' + id);
-    clientId = id;
-    console.log('clientId : ' + clientId);
+  socket.on('primary-clientId-from-file-server', (cmsdata) => {
+    console.log('clientId nhan duoc: ' + cmsdata.id);
+    cmsDataInfo = cmsdata;
+    console.log('clientId : ' + cmsdata.id);
   });
   socket.on('get-image-to-primary-from-file-server', (imgSrc) => {
-    console.log('clientId : ' + clientId);
-    io.to(clientId).emit('get-image-to-primary', imgSrc);  
+    console.log('clientId : ' + cmsDataInfo.id);
+    console.log('clientId flag : ' + cmsDataInfo.flag);
+    if(cmsDataInfo.flag == '1'){
+      io.to(cmsDataInfo.id).emit('get-image-to-primary-flag-1', imgSrc);  
+    }
+    if(cmsDataInfo.flag == '2'){
+      io.to(cmsDataInfo.id).emit('get-image-to-primary-flag-2', imgSrc);  
+    }
     console.log('imgSrc: ' + imgSrc);
   });
 });
